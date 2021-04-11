@@ -19,27 +19,22 @@ sub helloWorld() ' {
        source      := src         , _
        destination := cells(2, 2) )
 
-   with destTable.queryTable
+   with destTable.queryTable ' {
 
        .commandType              =  xlCmdSql
        .commandText              =  array("select * from [qry]")
-
        .rowNumbers               =  false
-
        .backgroundQuery          =  true
        .refreshStyle             =  xlInsertDeleteCells
-
        .saveData                 =  false
        .refreshOnFileOpen        =  true
-
        .adjustColumnWidth        =  true
        .refreshPeriod            =  0
        .preserveColumnInfo       =  true
-
        .listObject.DisplayName   = "destinationTable"
 
-       .refresh BackgroundQuery :=  false
+       .refresh backgroundQuery :=  false
 
-    end with
+    end with ' }
 
 end sub ' }
