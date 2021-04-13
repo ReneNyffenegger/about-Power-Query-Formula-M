@@ -12,7 +12,7 @@ sub evaluateFormulaMfromFile(fileName as string) ' {
    src = "OLEDB;"                             & _
          "Provider=Microsoft.Mashup.OleDb.1;" & _
          "Data Source=$Workbook$;"            & _
-         "Location=qry"
+         "Location=" & qry.name
 
    dim  sh as worksheet
    set  sh = activeWorkbook.sheets.add
