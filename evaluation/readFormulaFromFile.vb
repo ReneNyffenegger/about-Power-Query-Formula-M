@@ -1,7 +1,6 @@
 option explicit
 
-sub evaluateFormulaMfromFile(fileName as string) ' {
-
+sub evaluateMFormulaFromFile(fileName as string) ' {
 
    dim qry as WorkbookQuery
    set qry = activeWorkbook.queries.add( _
@@ -19,9 +18,9 @@ sub evaluateFormulaMfromFile(fileName as string) ' {
 
    dim  destTable as listObject
    set  destTable = sh.listObjects.add( _
-        sourceType  := 0           , _
-        source      := src         , _
-        destination := cells(2, 2) )
+        sourceType  := xlSrcExternal  , _
+        source      := src            , _
+        destination := cells(2, 2)    )
 
    with destTable.queryTable
 
