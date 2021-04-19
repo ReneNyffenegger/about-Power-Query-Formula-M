@@ -4,44 +4,19 @@ sub main() ' {
 
     dim sh as workSheet : set sh = activeSheet
 
-    createRange sh
+    createNamedRange sh
 
-    dim formula_M as string
+    addFormula cells(2, 6), "Excel.CurrentWorkbook()"
+    addFormula cells(2, 9), "Excel.CurrentWorkbook() { [Name = ""namedRange""] }"
+    addFormula cells(2,12), "Excel.CurrentWorkbook() { [Name = ""namedRange""] } [Content]"
 
-    formula_M = formula_M & "Excel.CurrentWorkbook()"
-
-    activeWorkbook.queries.add _
-       name    := "query",     _
-       formula :=  formula_M
-
-    dim connectionString as string
-    connectionString = "OLEDB;"                             & _
-                       "Provider=Microsoft.Mashup.OleDb.1;" & _
-                       "Data Source=$Workbook$;"            & _
-                       "Location=query;"
-
-
-    dim destTable as listObject
-    set destTable = activeSheet.listObjects.add( _
-       sourceType  := xlSrcExternal            , _
-       source      := connectionString         , _
-       destination := cells(2, 6))
-
-    destTable.name = "queryResult"
-
-    with destTable.queryTable ' {
-
-        .commandType              = xlCmdSql
-        .commandText              = array("select * from [query]")
-        .refresh backgroundQuery := false
-
-    end With ' }
+    sh.usedRange.columns.autofit
 
 end sub ' }
 
-sub createRange(sht as worksheet) ' {
+sub createNamedRange(sh as worksheet) ' {
 
-    with sht
+    with sh
 
         .range(.cells(2,2), .cells(2,4)) = array("txt", "num", "dat")
         .range(.cells(3,2), .cells(3,4)) = array("foo",  42, #2018-12-25#)
@@ -55,7 +30,38 @@ sub createRange(sht as worksheet) ' {
 
         end with
 
-
     end with
+
+end sub ' }
+
+sub addFormula(dest as range, formula_M as string)  ' {
+
+    dim qry as workbookQuery
+    set qry = activeWorkbook.queries.add                ( _
+       name    := "qry_" & activeWorkbook.queries.count , _
+       formula :=  formula_M                            )
+
+    dim connectionString as string
+    connectionString = "OLEDB;"                             & _
+                       "Provider=Microsoft.Mashup.OleDb.1;" & _
+                       "Data Source=$Workbook$;"            & _
+                       "Location=" & qry.name
+
+
+    dim destTable as listObject
+    set destTable = activeSheet.listObjects.add( _
+       sourceType  := xlSrcExternal            , _
+       source      := connectionString         , _
+       destination := dest )
+
+    destTable.name = qry.name
+
+    with destTable.queryTable ' {
+
+        .commandType              = xlCmdSql
+        .commandText              = array("select * from [" & qry.name & "]")
+        .refresh backgroundQuery := false
+
+    end With ' }
 
 end sub ' }
